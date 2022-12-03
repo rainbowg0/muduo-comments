@@ -85,6 +85,8 @@ class AtomicIntegerT : noncopyable
   }
 
  private:
+  // volatile 确保本条指令不会因为编译器优化而省略，要求每次直接读值。
+  // 开始时，系统每次总是从内存而不是寄存器备份读取数据。
   volatile T value_;
 };
 }  // namespace detail
