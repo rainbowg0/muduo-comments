@@ -43,6 +43,7 @@ class ThreadNameInitializer
   {
     muduo::CurrentThread::t_threadName = "main";
     CurrentThread::tid();
+    // 子进程在 fork() 后调用 afterFork(), 重置 tid
     pthread_atfork(NULL, NULL, &afterFork);
   }
 };
@@ -155,6 +156,10 @@ Thread::~Thread()
 {
   if (started_ && !joined_)
   {
+    // 如果一个线程结束运行但没被 join，则他的状态类似于进程的 zombie process，所以创建线程者应该调用
+    // pthread_join 等待线程结束运行，得到线程的退出代码来回收资源。
+    // 但是调用 pthread_join 后，如果该线程还没有结束，会阻塞调用者，这时可以在子线程添加 pthread_detach
+    // 将子线程状态设为 detached，这样子线程运行结束就会自动释放所有资源。
     pthread_detach(pthreadId_);
   }
 }
@@ -194,6 +199,7 @@ int Thread::join()
   assert(started_);
   assert(!joined_);
   joined_ = true;
+  // 调用 pthread_join() 的线程会阻塞，一直等到线程返回，调用pthread_exist，被取消
   return pthread_join(pthreadId_, NULL);
 }
 

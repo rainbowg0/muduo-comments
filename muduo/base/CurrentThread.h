@@ -13,6 +13,7 @@ namespace muduo
 namespace CurrentThread
 {
   // internal
+  // __thread 用于保存每个线程独自的数据，这样就可以不重复系统调用获取 tid 了。
   extern __thread int t_cachedTid;
   extern __thread char t_tidString[32];
   extern __thread int t_tidStringLength;
