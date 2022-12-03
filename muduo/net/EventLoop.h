@@ -36,6 +36,8 @@ class TimerQueue;
 /// Reactor, at most one per thread.
 ///
 /// This is an interface class, so don't expose too much details.
+// one loop per thread, 每个 EventLoop 对象最多只能对应一个线程
+// 拥有 EventLoop 的线程称为 I/O 线程，运行事件循环 loop。
 class EventLoop : noncopyable
 {
  public:
@@ -142,6 +144,7 @@ class EventLoop : noncopyable
   bool eventHandling_; /* atomic */
   bool callingPendingFunctors_; /* atomic */
   int64_t iteration_;
+  // 记住该 EventLoop 对象所属线程 id。
   const pid_t threadId_;
   Timestamp pollReturnTime_;
   std::unique_ptr<Poller> poller_;

@@ -30,6 +30,8 @@ class EventLoop;
 /// This class doesn't own the file descriptor.
 /// The file descriptor could be a socket,
 /// an eventfd, a timerfd, or a signalfd
+// 一个 Channel 对应一个 fd 和一个 EventLoop，与 EventLoop 关联后，
+// EventLoop 可以对 Channel 操作(e.g. update(), remove())
 class Channel : noncopyable
 {
  public:
@@ -55,6 +57,7 @@ class Channel : noncopyable
 
   int fd() const { return fd_; }
   int events() const { return events_; }
+  // 由 poll/epoll 调用。
   void set_revents(int revt) { revents_ = revt; } // used by pollers
   // int revents() const { return revents_; }
   bool isNoneEvent() const { return events_ == kNoneEvent; }
@@ -83,7 +86,12 @@ class Channel : noncopyable
  private:
   static string eventsToString(int fd, int ev);
 
+  // 将该 Channel 以及其绑定的 fd 和 EventLoop 中的 poll/epoll 关联。
   void update();
+  // 根据 revents_ 判断对应 fd 上实际发生的事件类型，
+  // 响应 Channel 所绑定的 fd 发生事件(调用回调)
+  // 在 EventLoop.loop() 中，poll/epoll 返回时，EventLoop 会获取事件发生的Channel集合，
+  // 逐一执行 HandleEvent
   void handleEventWithGuard(Timestamp receiveTime);
 
   static const int kNoneEvent;
@@ -91,8 +99,11 @@ class Channel : noncopyable
   static const int kWriteEvent;
 
   EventLoop* loop_;
+  // Channel 绑定了一个 fd。
   const int  fd_;
+  // 该 Channel 在 fd 上所关心的事件。
   int        events_;
+  // 实际发生的事件。
   int        revents_; // it's the received event types of epoll or poll
   int        index_; // used by Poller.
   bool       logHup_;

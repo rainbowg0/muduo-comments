@@ -41,19 +41,6 @@ void test(int maxSize)
   pool.stop();
 }
 
-/*
- * Wish we could do this in the future.
-void testMove()
-{
-  muduo::ThreadPool pool;
-  pool.start(2);
-
-  std::unique_ptr<int> x(new int(42));
-  pool.run([y = std::move(x)]{ printf("%d: %d\n", muduo::CurrentThread::tid(), *y); });
-  pool.stop();
-}
-*/
-
 void longTask(int num)
 {
   LOG_INFO << "longTask " << num;
@@ -88,10 +75,10 @@ void test2()
 
 int main()
 {
-  test(0);
+//  test(0);
   test(1);
-  test(5);
-  test(10);
-  test(50);
-  test2();
+//  test(5);
+//  test(10);
+//  test(50);
+//  test2();
 }

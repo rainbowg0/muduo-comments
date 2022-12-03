@@ -100,6 +100,7 @@ EventLoop::~EventLoop()
   t_loopInThisThread = NULL;
 }
 
+// 事件循环，不能跨线程调用，只能在创建该对象的线程中调用。
 void EventLoop::loop()
 {
   assert(!looping_);
