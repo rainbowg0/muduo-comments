@@ -31,7 +31,9 @@ class Exception : public std::exception
   }
 
  private:
+  // 普通异常信息
   string message_;
+  // 整个异常错误回溯
   string stack_;
 };
 

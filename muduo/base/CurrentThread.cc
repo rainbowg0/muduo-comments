@@ -24,7 +24,11 @@ string stackTrace(bool demangle)
   string stack;
   const int max_frames = 200;
   void* frame[max_frames];
+  // ::backtrace() 用于获取当前线程的调用堆栈，获取的每个 void* 是每个函数返回地址。
+  // max_frames 指定 frame 中可以保存多少个 void*
+  // 元素，nptrs 是实际获取的数量。
   int nptrs = ::backtrace(frame, max_frames);
+  // 通过 frame 中地址，转化为一个字符串数组，包含函数名，函数的偏移地址，实际的返回地址。
   char** strings = ::backtrace_symbols(frame, nptrs);
   if (strings)
   {
