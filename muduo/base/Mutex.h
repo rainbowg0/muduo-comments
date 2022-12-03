@@ -198,6 +198,9 @@ class CAPABILITY("mutex") MutexLock : noncopyable
   pid_t holder_;
 };
 
+// RAII 手法，Resource Acquire is Initialization, 在构造函数中申请分配资源，在析构函数中释放资源。
+// 因为c++的语言机制保证了当一个对象创建的时候，自动调用构造函数，当对象超出作用域时自动调用析构函数，
+// 在 RAII 基础下，使用类来管理资源，将资源与对象的生命周期绑定。
 // Use as a stack variable, eg.
 // int Foo::size() const
 // {
