@@ -56,6 +56,7 @@ class Timestamp : public muduo::copyable,
 
   // for internal usage.
   int64_t microSecondsSinceEpoch() const { return microSecondsSinceEpoch_; }
+  // 转化为秒的形式
   time_t secondsSinceEpoch() const
   { return static_cast<time_t>(microSecondsSinceEpoch_ / kMicroSecondsPerSecond); }
 
@@ -81,6 +82,7 @@ class Timestamp : public muduo::copyable,
   static const int kMicroSecondsPerSecond = 1000 * 1000;
 
  private:
+  //
   int64_t microSecondsSinceEpoch_;
 };
 
