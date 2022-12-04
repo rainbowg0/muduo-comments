@@ -95,6 +95,7 @@ TimerQueue::TimerQueue(EventLoop* loop)
     timers_(),
     callingExpiredTimers_(false)
 {
+  // 设置 TimerfdChannel_ 的超时后 callback。
   timerfdChannel_.setReadCallback(
       std::bind(&TimerQueue::handleRead, this));
   // we are always reading the timerfd, we disarm it with timerfd_settime.
@@ -134,6 +135,7 @@ void TimerQueue::addTimerInLoop(Timer* timer)
   loop_->assertInLoopThread();
   bool earliestChanged = insert(timer);
 
+  // 如果新插入的 Timer 超时时间是最近的，
   if (earliestChanged)
   {
     resetTimerfd(timerfd_, timer->expiration());
@@ -180,6 +182,7 @@ void TimerQueue::handleRead()
   reset(expired, now);
 }
 
+// 从 timers_ 获取到目前 now 为止所有超时事件，返回并删除。
 std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timestamp now)
 {
   assert(timers_.size() == activeTimers_.size());

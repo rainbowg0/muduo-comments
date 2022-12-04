@@ -13,6 +13,7 @@ using namespace muduo::net;
 
 AtomicInt64 Timer::s_numCreated_;
 
+// 对于需要重复的任务，调用 restart
 void Timer::restart(Timestamp now)
 {
   if (repeat_)

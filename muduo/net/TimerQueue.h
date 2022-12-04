@@ -32,6 +32,7 @@ class TimerId;
 /// A best efforts timer queue.
 /// No guarantee that the callback will be on time.
 ///
+// 绑定一个 EventLoop, 一个 timerfd，一个 Channel
 class TimerQueue : noncopyable
 {
  public:
@@ -73,6 +74,9 @@ class TimerQueue : noncopyable
   const int timerfd_;
   Channel timerfdChannel_;
   // Timer list sorted by expiration
+  // 将所有 Timer 根据超时时间从小到大放置。将最小 Timer 超时时间设置为 timerfd 超时事件，
+  // 到了该时间，timerfd 上就会有读事件发生，然后定时器会将定时在该超时时间到真正处理该读事件之间的Timer获取到
+  // 执行这些Timer的定时函数。
   TimerList timers_;
 
   // for cancel()

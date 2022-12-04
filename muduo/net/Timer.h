@@ -48,12 +48,18 @@ class Timer : noncopyable
   static int64_t numCreated() { return s_numCreated_.get(); }
 
  private:
+  // 定时执行函数
   const TimerCallback callback_;
+  // 超时时间
   Timestamp expiration_;
+  // 执行间隔
   const double interval_;
+  // 是否重复执行任务
   const bool repeat_;
+  // 序列号，每个 Timer 不同。
   const int64_t sequence_;
 
+  // 通过 s_numCreated_ 生成 sequence_, 保证每个 Timer 的 sequence_ 不同。
   static AtomicInt64 s_numCreated_;
 };
 

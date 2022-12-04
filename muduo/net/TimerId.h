@@ -23,6 +23,7 @@ class Timer;
 ///
 /// An opaque identifier, for canceling Timer.
 ///
+// 对 Timer 作了一次封装。
 class TimerId : public muduo::copyable
 {
  public:
