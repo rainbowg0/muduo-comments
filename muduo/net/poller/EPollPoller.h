@@ -25,6 +25,7 @@ namespace net
 ///
 /// IO Multiplexing with epoll(4).
 ///
+// 一个 EventLoop 对应一个 EPoller
 class EPollPoller : public Poller
 {
  public:

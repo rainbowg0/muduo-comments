@@ -58,7 +58,9 @@ class Poller : noncopyable
   }
 
  protected:
+  // <fd, Channel*>
   typedef std::map<int, Channel*> ChannelMap;
+  // 通过 fd 对 Channel 进行查找和删除。
   ChannelMap channels_;
 
  private:

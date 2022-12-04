@@ -36,6 +36,7 @@ const int kAdded = 1;
 const int kDeleted = 2;
 }
 
+// epoll 将用户关心的 fd 放在内核心的一个事件表中，使用一个额外的 fd 来读写。
 EPollPoller::EPollPoller(EventLoop* loop)
   : Poller(loop),
     epollfd_(::epoll_create1(EPOLL_CLOEXEC)),
@@ -110,12 +111,13 @@ void EPollPoller::updateChannel(Channel* channel)
   const int index = channel->index();
   LOG_TRACE << "fd = " << channel->fd()
     << " events = " << channel->events() << " index = " << index;
-  if (index == kNew || index == kDeleted)
+  if (index == kNew || index == kDeleted)  // 如果是一个新 Channel, 或者之前被删除的 Channel
   {
     // a new one, add with EPOLL_CTL_ADD
     int fd = channel->fd();
     if (index == kNew)
     {
+      // 如果是新的，在 channels_ 里没有，那就构建一个
       assert(channels_.find(fd) == channels_.end());
       channels_[fd] = channel;
     }
@@ -125,6 +127,7 @@ void EPollPoller::updateChannel(Channel* channel)
       assert(channels_[fd] == channel);
     }
 
+    // 在 Channel 里设置 index
     channel->set_index(kAdded);
     update(EPOLL_CTL_ADD, channel);
   }
@@ -171,6 +174,7 @@ void EPollPoller::removeChannel(Channel* channel)
 
 void EPollPoller::update(int operation, Channel* channel)
 {
+  // 构建一个 event
   struct epoll_event event;
   memZero(&event, sizeof event);
   event.events = channel->events();
@@ -178,6 +182,7 @@ void EPollPoller::update(int operation, Channel* channel)
   int fd = channel->fd();
   LOG_TRACE << "epoll_ctl op = " << operationToString(operation)
     << " fd = " << fd << " event = { " << channel->eventsToString() << " }";
+  // 操作 epoll 的内核事件表。
   if (::epoll_ctl(epollfd_, operation, fd, &event) < 0)
   {
     if (operation == EPOLL_CTL_DEL)
